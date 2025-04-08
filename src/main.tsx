@@ -1,23 +1,17 @@
 import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import ReactDOM from "react-dom/client";
+import ReactDOM, { createRoot } from "react-dom/client";
 
 import App from "./App";
 import "./index.css";
-
-declare global {
-  interface Window {
-    MyWidget: { mount: (selector?: string) => void };
-  }
-}
+import { IWidgetCofig } from "./types";
 
 let root: ReactDOM.Root | null = null;
 
-function mount(selector = "#my-widget") {
-  const el = document.querySelector(selector);
+function mount(config: IWidgetCofig) {
+  const el = document.querySelector(config.container);
 
   if (!el) {
-    console.warn(`[MyWidget] Mount target "${selector}" not found.`);
+    console.warn(`[Widget] Mount target "${config.container}" not found.`);
     return;
   }
 
@@ -29,11 +23,14 @@ function mount(selector = "#my-widget") {
   root.render(<App />);
 }
 
-window.MyWidget = { mount };
+window.Widget = { mount };
 
 // Optional: Auto-mount if element exists
-if (document.querySelector("#my-widget")) {
-  window.MyWidget.mount();
+const DEFAULT_WIDGET_CONTAINER = "#widget";
+if (document.querySelector(DEFAULT_WIDGET_CONTAINER)) {
+  window.Widget.mount({
+    container: DEFAULT_WIDGET_CONTAINER,
+  });
 } else {
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
